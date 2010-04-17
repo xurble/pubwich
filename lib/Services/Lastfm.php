@@ -33,16 +33,16 @@
 		public function init() {
 			parent::init();
 		}
-
+					
 	}
 
 	class LastFMRecentTracks extends LastFM {
 
 		public function __construct( $config ) {
-			parent::setVariables( $config );
+			parent::setVariables( $config );	
 
 			$this->setURL( sprintf( 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&api_key=%s&user=%s&limit=%d', $this->key, $this->username, $this->total ) );
-			$this->setItemTemplate('<li{%classe%}><a class="clearfix" href="{%link%}">{%artist%} — {%track%}</a></li>'."\n");
+			$this->setItemTemplate('<li{%classe%}><a class="clearfix" href="{%link%}"><img src="{%image%}" width="{%size%}" height="{%size%}" alt="{%track%}"><strong><span>{%artist%}</span> {%track%}</strong></a></li>'."\n");
 
 			parent::__construct( $config );
 		}
@@ -69,6 +69,9 @@
 						'album' => $album,
 						'track' => $title,
 						'date' => $item->date,
+						'image' => $item->image[2],
+						'size' => $this->size,
+
 						'classe' => isset($this->classes[$this->compteur-1]) ? ' class="'.$this->classes[$this->compteur-1].'"' : '',
 						);
 		}
