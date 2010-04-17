@@ -63,13 +63,16 @@
 			$artist = $item->artist;
 			$title= $item->name;
 			$this->compteur++;
+			
+			$img = ($item->image[2] != '' ? $item->image[2] : Pubwich::getThemeUrl().'/img/cover.png');
+			
 			return array(
 						'link' => htmlspecialchars( $item->url ),
 						'artist' => $artist,
 						'album' => $album,
 						'track' => $title,
 						'date' => $item->date,
-						'image' => $item->image[2],
+						'image' => $img,
 						'size' => $this->size,
 
 						'classe' => isset($this->classes[$this->compteur-1]) ? ' class="'.$this->classes[$this->compteur-1].'"' : '',
