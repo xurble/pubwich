@@ -4,7 +4,7 @@
 	/**
 	 * @classname Atom
 	 * @description Fetch Atom feeds
-	 * @version 1.1 (20090929)
+	 * @version 1.2 (20100421)
 	 * @author Rémi Prévost (exomel.com)
 	 * @methods None
 	 */
@@ -36,7 +36,7 @@
 			return array(
 						'link' => htmlspecialchars( $link ),
 						'title' => trim( $item->title ),
-						'date' => Pubwich::time_since( $item->published ),
+						'date' => ($item->published ? Pubwich::time_since( $item->published) : Pubwich::time_since( $item->updated)), // Buzz feeds sometimes don't have a published date
 						'content' => $item->content,
 			);
 		}
