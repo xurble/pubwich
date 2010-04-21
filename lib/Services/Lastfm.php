@@ -35,15 +35,14 @@
 		}
 					
 	}
-
-	class LastFMRecentTracks extends LastFM {
+	
+	// Base class for classes that return an array of tracks (recent, loved, weekly chart etc).
+	class LastFMTracksBase extends LastFM {
 
 		public function __construct( $config ) {
 			parent::setVariables( $config );	
-
-			$this->setURL( sprintf( 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&api_key=%s&user=%s&limit=%d', $this->key, $this->username, $this->total ) );
+			$this->setURL( sprintf( 'http://ws.audioscrobbler.com/2.0/?method=%s&api_key=%s&user=%s&limit=%d', $this->method,$this->key, $this->username, $this->total ) );
 			$this->setItemTemplate('<li{%classe%}><a class="clearfix" href="{%link%}"><img src="{%image%}" width="{%size%}" height="{%size%}" alt="{%track%}"><strong><span>{%artist%}</span> {%track%}</strong></a></li>'."\n");
-
 			parent::__construct( $config );
 		}
 
@@ -52,7 +51,8 @@
 		 */
 		public function getData() {
 			$data = parent::getData();
-			return $data->recenttracks->track;
+			$ds = $this->dataset;
+			return $data->$ds->track;
 		}
 
 		/**
@@ -82,98 +82,42 @@
 	}
 
 
-	class LastFMLovedTracks extends LastFM {
+	class LastFMRecentTracks extends LastFMTracksBase {
 
 		public function __construct( $config ) {
-			parent::setVariables( $config );	
 
-			$this->setURL( sprintf( 'http://ws.audioscrobbler.com/2.0/?method=user.getlovedtracks&api_key=%s&user=%s&limit=%d', $this->key, $this->username, $this->total ) );
-			$this->setItemTemplate('<li{%classe%}><a class="clearfix" href="{%link%}"><img src="{%image%}" width="{%size%}" height="{%size%}" alt="{%track%}"><strong><span>{%artist%}</span> {%track%}</strong></a></li>'."\n");
-
+			$this->method = "user.getrecenttracks";
+			$this->dataset = "recenttracks";
 			parent::__construct( $config );
+
 		}
-
-		/**
-		 * @return SimpleXMLElement
-		 */
-		public function getData() {
-			$data = parent::getData();
-			return $data->lovedtracks->track;
-		}
-
-		/**
-		 * @return array
-		 */
-		public function populateItemTemplate( &$item ) {
-			$album = $item->album;
-			$artist = $item->artist->name	;
-			$title= $item->name;
-			$this->compteur++;
-			
-			$img = ($item->image[2] != '' ? $item->image[2] : Pubwich::getThemeUrl().'/img/cover.png');
-			
-			return array(
-						'link' => htmlspecialchars( $item->url ),
-						'artist' => $artist,
-						'album' => $album,
-						'track' => $title,
-						'date' => $item->date,
-						'image' => $img,
-						'size' => $this->size,
-
-						'classe' => isset($this->classes[$this->compteur-1]) ? ' class="'.$this->classes[$this->compteur-1].'"' : '',
-						);
-		}
-
 	}
 
-	
-	class LastFMWeeklyTracks extends LastFM {
+
+	class LastFMLovedTracks extends LastFMTracksBase {
 
 		public function __construct( $config ) {
-			parent::setVariables( $config );	
+
+			$this->method = "user.getlovedtracks";
+			$this->dataset = "lovedtracks";
+			parent::__construct( $config );
+
+		}
+	}
+
+
+	class LastFMWeeklyTracks extends LastFMTracksBase {
+
+		public function __construct( $config ) {
+
 			$this->classes = array( 'premier', 'deuxieme', 'troisieme', 'quatrieme' );
-
-			$this->setURL( sprintf( 'http://ws.audioscrobbler.com/2.0/?method=user.getweeklytrackchart&api_key=%s&user=%s', $this->key, $this->username ) );
-			$this->setItemTemplate('<li{%classe%}><a title="{%playcount%} plays" class="clearfix" href="{%link%}"><img src="{%image%}" width="{%size%}" height="{%size%}" alt="{%track%}"><strong><span>{%artist%}</span> {%track%}</strong></a></li>'."\n");
-
+			$this->method = "user.getweeklytrackchart";
+			$this->dataset = "weeklytrackchart";
 			parent::__construct( $config );
-		}
 
-		/**
-		 * @return SimpleXMLElement
-		 */
-		public function getData() {
-			$data = parent::getData();
-			return $data->weeklytrackchart->track;
 		}
-
-		/**
-		 * @return array
-		 */
-		public function populateItemTemplate( &$item ) {
-			$album = $item->album;
-			$artist = $item->artist;
-			$title= $item->name;
-			$this->compteur++;
-			
-			$img = ($item->image[2] != '' ? $item->image[2] : Pubwich::getThemeUrl().'/img/cover.png');
-			
-			return array(
-						'link' => htmlspecialchars( $item->url ),
-						'artist' => $artist,
-						'album' => $album,
-						'track' => $title,
-						'date' => $item->date,
-						'image' => $img,
-						'size' => $this->size,
-						'playcount' => $item->playcount,
-						'classe' => isset($this->classes[$this->compteur-1]) ? ' class="'.$this->classes[$this->compteur-1].'"' : '',
-						);
-		}
-
 	}
-	
+
 
 	class LastFMWeeklyAlbums extends LastFM {
 

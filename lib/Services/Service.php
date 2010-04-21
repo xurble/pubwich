@@ -198,14 +198,15 @@
 			$items = '';
 			$classData = $this->getData();
 
-			$htmlClass = strtolower( get_class( $this ) ).' '.( get_parent_class( $this ) != 'Service' ? strtolower( get_parent_class( $this ) ) : '' );
+			$htmlClass = strtolower(join($this->getClasses(),' '));
+			
 			if ( !$classData ) {
 				$items = '<li class="nodata">'.sprintf( Pubwich::_('An error occured with the %s API. The data is therefore unavailable.'), get_class( $this ) ).'</li>';
 				$htmlClass .= ' nodata';
 			} else {
 				foreach( $classData as $item ) {
 					$compteur++;
-					if ($this->total && $compteur > $this->total) { break; }
+					if ($this->total && $compteur > $this->total) { break; }  
 					$populate = $this->populateItemTemplate( $item );
 
 					if ( function_exists( get_class( $this ) . '_populateItemTemplate' ) ) {
@@ -240,6 +241,22 @@
 
 		public function getHeaderLink() {
 			return $this->header_link;
+		}
+
+		//	 Get the full heirarchy of classes up to but not including 'Service'
+		public function getClasses($class=null, $plist=array()) {
+			if(!$class) {
+				$plist[] = get_class($this);
+			}
+			$class = $class ? $class : $this;
+			$parent = get_parent_class($class);
+			if($parent && $parent != 'Service') {
+				$plist[] = $parent;
+				/*Do not use $this. Use 'self' here instead, or you
+				* will get an infinite loop. */
+				$plist = self::getClasses($parent, $plist);
+			}
+			return $plist;
 		}
 
 	}
