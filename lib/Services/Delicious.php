@@ -4,7 +4,7 @@
 	/**
 	 * @classname Delicious
 	 * @description Fetch Del.icio.us bookmarks
-	 * @version 1.1 (20090929)
+	 * @version 1.2 (20100421)
 	 * @author Rémi Prévost (exomel.com)
 	 * @methods None
 	 */

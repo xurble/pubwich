@@ -4,9 +4,10 @@
 	/**
 	 * @classname LastFM
 	 * @description Fetch data from Last.fm
-	 * @version 1.1 (20090929)
+	 * @version 1.2 (20100421)
 	 * @author Rémi Prévost (exomel.com)
-	 * @methods LastFMWeeklyAlbums LastFMRecentTracks
+	 * @author Gareth Simpson (xurble.org)
+	 * @methods LastFMWeeklyAlbums LastFMWeeklyTracks LastFMRecentTracks LastFMLovedTracks
 	 */
 
 	class LastFM extends Service {
