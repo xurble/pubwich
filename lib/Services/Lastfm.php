@@ -4,7 +4,7 @@
 	/**
 	 * @classname LastFM
 	 * @description Fetch data from Last.fm
-	 * @version 1.2 (20100421)
+	 * @version 1.2 (20100424)
 	 * @author Rémi Prévost (exomel.com)
 	 * @author Gareth Simpson (xurble.org)
 	 * @methods LastFMWeeklyAlbums LastFMWeeklyTracks LastFMRecentTracks LastFMLovedTracks
@@ -60,18 +60,17 @@
 		 * @return array
 		 */
 		public function populateItemTemplate( &$item ) {
-			$album = $item->album;
-			$artist = $item->artist;
-			$title= $item->name;
+
 			$this->compteur++;
+			$artist = (trim($item->artist) != '' ? $item->artist : $item->artist->name);
 			
 			$img = ($item->image[2] != '' ? $item->image[2] : Pubwich::getThemeUrl().'/img/cover.png');
 			
 			return array(
 						'link' => htmlspecialchars( $item->url ),
-						'artist' => $artist,
-						'album' => $album,
-						'track' => $title,
+						'artist' => htmlspecialchars($artist),
+						'album' => htmlspecialchars($item->album),
+						'track' => htmlspecialchars($item->name),
 						'date' => $item->date,
 						'image' => $img,
 						'size' => $this->size,
