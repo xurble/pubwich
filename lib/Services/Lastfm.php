@@ -89,7 +89,6 @@
 			$this->method = "user.getrecenttracks";
 			$this->dataset = "recenttracks";
 			parent::__construct( $config );
-
 		}
 	}
 
@@ -101,6 +100,7 @@
 			$this->method = "user.getlovedtracks";
 			$this->dataset = "lovedtracks";
 			parent::__construct( $config );
+			$this->setItemTemplate('<li{%classe%}><a class="clearfix" href="http://{%link%}"><img src="{%image%}" width="{%size%}" height="{%size%}" alt="{%track%}"><strong><span>{%artist%}</span> {%track%}</strong></a></li>'."\n");
 
 		}
 	}
