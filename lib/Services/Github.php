@@ -19,7 +19,7 @@
 			$config['url'] = sprintf( 'http://github.com/%s.atom', $config['username'] );
 			$config['link'] = 'http://github.com/'.$config['username'].'/';
 			parent::__construct( $config );
-			$this->setItemTemplate('<li class="clearfix"><a href="{%link%}">{%title%}</a></li>'."\n");
+			$this->setItemTemplate('<li class="clearfix"><a href="{%link%}">{%title%}</a>{%content%}<div style="text-align:right"><small>{%date%}</small></div></li>'."\n");
 		}
 
 		/**
