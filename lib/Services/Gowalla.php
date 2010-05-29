@@ -72,7 +72,7 @@
 		public function __construct( $config ) {
 			$this->total = $config['total'];
 			$this->setURL( sprintf( 'http://%s:%s@api.gowalla.com/users/%s/stamps?limit=%d', $config['username'], $config['password'], $config['username'], $config['total'] ) );
-			$this->setItemTemplate( '<li><a href="{%url%}"><img src="{%image%}" width="20" alt="" /><strong>{%name%}</strong><small class="date">{%date%}</small></a></li>'."\n" );
+			$this->setItemTemplate( '<li><a href="{%url%}"><img src="{%image%}" width="20" alt="" /><strong>{%name%}</strong></a><small class="date">{%date%}</small></li>'."\n" );
 			parent::__construct( $config );
 		}
 

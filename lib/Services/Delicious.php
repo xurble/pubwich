@@ -14,7 +14,8 @@
 
 		public function __construct( $config ){
 			$config['link'] = 'http://delicious.com/'.$config['username'].'/';
-			$config['url'] = sprintf( 'http://feeds.delicious.com/v2/rss/%s?count=%s', $config['username'], $config['total'] );
+			//$config['url'] = sprintf( 'http://feeds.delicious.com/v2/rss/%s?count=%s', $config['username'], $config['total'] );
+			$config['url'] = 'http://feeds.feedburner.com/Delicious/xurble?format=xml';
 			parent::__construct( $config );
 			$this->setItemTemplate('<li class="link"><a href="{%link%}">{%title%}</a>{%tags%}</li>'."\n");
 		}
