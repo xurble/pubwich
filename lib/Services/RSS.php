@@ -14,11 +14,7 @@
 		public function __construct( $config ){
 			$this->setURL( $config['url'] );
 			$this->total = $config['total'];
-<<<<<<< HEAD
-			$this->setItemTemplate('<li><a href="{%link%}">{%title%}</a><div style="text-align:right"><small>{%date%}</small></div></li>'."\n");
-=======
-			$this->setItemTemplate('<li><a href="{{{link}}}">{{{title}}}</a> {{{date}}}</li>'."\n");
->>>>>>> upstream/master
+			$this->setItemTemplate('<li><a href="{{{link}}}">{{{title}}}</a><div style="text-align:right"><small>{{{date}}}</small></div></li>'."\n");
 			$this->setURLTemplate( $config['link'] );
 			$this->setHeaderLink( array( 'url' => $config['url'], 'type' => 'application/rss+xml' ) );
 			parent::__construct( $config );
