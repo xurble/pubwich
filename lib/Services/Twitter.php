@@ -81,7 +81,7 @@
 			$this->setURLTemplate('http://www.twitter.com/'.$config['username'].'/');
 			
 			
-			$this->setMapItemTemplate('<div>{{{text}}}</div>');
+			$this->setMapItemTemplate('<div class="mapbox">{{{text}}}</div>');
 
 			parent::__construct( $config );
 		}

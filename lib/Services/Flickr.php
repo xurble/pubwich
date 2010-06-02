@@ -12,12 +12,15 @@
 	class Flickr extends Service {
 
 		public $compteur, $row, $sort;
+		
+		public $getgeodata, $photogeodata, $apikey;
 
 		/**
 		 * @constructor
 		 */
 		public function __construct( $config ) {
 			parent::__construct( $config );
+			$this->apikey = $config['key'];
 		}
 
 		/**
@@ -30,6 +33,10 @@
 			$this->sort = isset( $config['sort'] ) ? $config['sort'] : 'date-posted-desc';
 			$this->compteur = 0;
 			$this->setItemTemplate('<li{{{classe}}}><a href="{{{link}}}"><img src="{{{photo}}}" alt="{{{title}}}" /></a></li>'."\n");
+			$this->getgeodata = isset( $config['getgeodata'] ) ? $config['getgeodata'] : false ;
+			
+			$this->setMapItemTemplate('<div class="mapbox">{{{title}}}<br><a href="{{{link}}}"><img src="{{{photo}}}" alt="{{{title}}}" /></a></div>');
+
 		}
 
 		/**
@@ -63,6 +70,18 @@
 		}
 
 		/**
+		 * @return Flickr
+		 */
+		public function init() {
+			parent::init();
+			if($this->getgeodata) {
+				$this->buildPhotoGeoCache( true );
+			}
+			return $this;
+		}
+
+
+		/**
 		 * Overcharge parent::getData()
 		 * @return SimpleXMLElement
 		 */
@@ -70,6 +89,79 @@
 			$data = parent::getData();
 			return $data->photos->photo;
 		}
+
+
+		public function populateMapData( &$item ) {
+		
+			if(!$this->getgeodata)
+				return null;
+		
+			$id = $item['id']."";
+			$geo = $this->photogeodata[$id];
+
+			if ($geo->err["code"] != null )
+				return null;
+				
+			$loc = new Location();
+			$pt = array();
+			$pt[0] = $geo->photo->location["longitude"];
+			$pt[1] = $geo->photo->location["latitude"];
+			$loc->addPoint($pt);
+			$loc->setData($this->populateItemTemplate($item));
+			
+			return $loc;
+		}
+
+
+		/**
+		 * @param string $url
+		 * @return void
+		 */
+		public function buildCache() {
+			parent::buildCache(); 
+			if($this->getgeodata) {
+				$this->buildPhotoGeoCache( true );
+			}
+		}
+
+		/**
+		 * @param bool $rebuildCache Force cache rebuild
+		 * @return void
+		 */
+		public function buildPhotoGeoCache( $rebuildCache ) {
+			$data = $this->getData();
+			if ( $data ) {
+				foreach ( $data as $photo ) {
+					$this->fetchPhotoGeoData( $photo, $rebuildCache );
+				}
+			}
+		}
+
+		/**
+		 * @param SimpleXMLElement $album
+		 * [@param bool $rebuildCache]
+		 * @return void
+		 */
+		public function fetchPhotoGeoData($photo, $rebuildCache=false) {
+			$Cache_Lite = new Cache_Lite( parent::getCacheOptions() );
+			$id = $photo["id"];
+			if ( !$rebuildCache && $data = $Cache_Lite->get( $id ) ) {
+				$this->photogeodata["$id"] = simplexml_load_string( $data );
+			} else {
+				$Cache_Lite->get( $id );
+				PubwichLog::log( 2, Pubwich::_( 'Rebuilding geo cache for a Flickr Photo' ) );
+				$url = sprintf( 'http://api.flickr.com/services/rest/?method=flickr.photos.geo.getLocation&api_key=%s&photo_id=%s', $this->apikey, $id);
+				$fdata = FileFetcher::get( $url );
+				$cacheWrite = $Cache_Lite->save( $fdata );
+				if ( PEAR::isError($cacheWrite) ) {
+					//var_dump( $cacheWrite );
+				}
+				$pdata = simplexml_load_string( $fdata );
+				$this->photogeodata["$id"] = $pdata;
+			}
+
+		}
+
 
 	}
 
