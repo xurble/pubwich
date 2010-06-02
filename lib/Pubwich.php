@@ -297,6 +297,8 @@
 			} else {
 				$layoutTemplate = '';
 			}
+			
+			$mapdata = '';
 
 			$output_columns = array();
 			$m = new Mustache;
@@ -304,6 +306,8 @@
 				$boxes = '';
 				foreach( $classes as $class ) {
 					$boxes .= $class->renderBox();
+					$md = $class->getMapData();
+					if($md) $mapdata .= $md."\n";
 				}
 				$output_columns['col'.$col] = $m->render($columnTemplate, array('number'=>$col, 'content'=>$boxes));
 
@@ -311,7 +315,10 @@
 					$layoutTemplate .= '{{{col'.$col.'}}} ';
 				}
 			}
-			return $m->render($layoutTemplate, $output_columns);
+			
+			$mapdata = "<script>gMapData = [null".$mapdata."];\n</script>";
+			
+			return $m->render($layoutTemplate, $output_columns).$mapdata;
 		}
 
 		/*

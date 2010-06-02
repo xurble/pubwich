@@ -9,6 +9,8 @@
 	 * @methods TwitterUser TwitterSearch
 	 */
 
+	require_once( dirname(__FILE__) . '/../Location.php' );
+
 	require_once( dirname(__FILE__) . '/../OAuth/OAuth.php' );
 	class Twitter extends Service {
 
@@ -77,6 +79,9 @@
 			$this->username = $config['username'];
 			$this->setItemTemplate('<li class="clearfix"><span class="date"><a href="{{{link}}}">{{{date}}}</a></span>{{{text}}}</li>'."\n");
 			$this->setURLTemplate('http://www.twitter.com/'.$config['username'].'/');
+			
+			
+			$this->setMapItemTemplate('<div>{{{text}}}</div>');
 
 			parent::__construct( $config );
 		}
@@ -90,6 +95,28 @@
 					'user_link' => sprintf( 'http://www.twitter.com/%s/', $item->user->screen_name ),
 					'in_reply_to_screen_name' => $item->in_reply_to_screen_name,
 			);
+		}
+		
+		public function populateMapData( &$item ) {
+		
+			if ($item->coordinates) // exact location
+			{
+				$loc = new Location();
+				$loc->addPoint($item->coordinates->coordinates);
+				
+			}
+			else if ($item->place) // a place (bounding box
+			{
+				$loc = new Location();
+				$loc->setPoints($item->place->bounding_box->coordinates[0]); // it's possible that this is a multi region polygon, but I don't care too much ;)
+			}
+			else
+			{
+				return null;
+			}
+			$loc->setData($this->populateItemTemplate($item));
+			
+			return $loc;
 		}
 
 	}

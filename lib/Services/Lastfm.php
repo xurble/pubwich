@@ -61,7 +61,7 @@
 		public function populateItemTemplate( &$item ) {
 
 			$this->compteur++;
-			$artist = (trim($item->artist) != '' ? $item->artist : $item->artist->name);
+			$artist = (trim($item->artist) != '' ? $item->artist : $item->artist->name); // copes with lovedtracks
 			
 			$img = ($item->image[2] != '' ? $item->image[2] : Pubwich::getThemeUrl().'/img/cover.png');
 			
@@ -99,6 +99,7 @@
 			$this->method = "user.getlovedtracks";
 			$this->dataset = "lovedtracks";
 			parent::__construct( $config );
+			// stoopid getlovedtracks returns something quite different to other tracks based methods
 			$this->setItemTemplate('<li{{{classe}}}><a class="clearfix" href="http://{{{link}}}"><img src="{{{image}}}" width="{{{size}}}" height="{{{size}}}" alt="{{{track}}}"><strong><span>{{{artist}}}</span> {{{track}}}</strong></a></li>'."\n");
 
 		}

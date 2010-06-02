@@ -7,7 +7,7 @@
 	class Service {
 
 		public $data, $cache_id, $cache_options, $title, $description, $urlTemplate, $username, $total, $method, $callback_function, $header_link, $http_headers;
-		private $url, $itemTemplate, $tmpTemplate, $boxTemplate, $tmpBoxTemplate;
+		private $url, $itemTemplate, $tmpTemplate, $boxTemplate, $tmpBoxTemplate, $mapItemTemplate,$tmpMapItemTemplate;
 
 		/**
 		 * @constructor
@@ -45,6 +45,13 @@
 				$this->setBoxTemplate( $this->tmpBoxTemplate );
 				$this->tmpBoxTemplate = null;
 			}
+			
+			$this->mapItemTemplate = new PubwichTemplate();
+			if ( $this->tmpMapItemTemplate ) {
+				$this->setMapItemTemplate( $this->tmpMapItemTemplate );
+				$this->tmpMapItemTemplate = null;
+			}
+			
 		}
 
 		/**
@@ -172,6 +179,26 @@
 
 		/**
 		 * @param string $template
+		 * @return void
+		 */
+		public function setMapItemTemplate( $template ) {
+			if ( !$this->mapItemTemplate ) {
+				$this->tmpMapItemTemplate = $template;
+			} else {
+				$this->mapItemTemplate->setTemplate( $template );
+			}
+		}
+
+		
+		/**
+		 * @return PubwichTemplate
+		 */
+		public function getMapItemTemplate() {
+			return $this->mapItemTemplate;
+		}
+
+		/**
+		 * @param string $template
 		 */
 		public function setBoxTemplate( $template ) {
 			if ( !$this->boxTemplate ) {
@@ -243,6 +270,46 @@
 
 			$this->getBoxTemplate()->populate( $data );
 			return $this->getBoxTemplate()->output();
+		}
+		
+		
+		public function getMapData() {
+			$items = '';
+			$classData = $this->getData();
+			if (!$classData){
+				return '';
+			}
+			else {
+				foreach($classData as $item) {
+					$compteur++;
+					if ($this->total && $compteur > $this->total) { break; }  
+					$location = $this->populateMapData( $item );
+					if ($location != null) {
+						// this is the theme overriding bit from the main boxes, will have to do map equivalent at some point
+						//if ( function_exists( get_class( $this ) . '_populateItemTemplate' ) ) {
+						//	$populate = call_user_func( get_class( $this ) . '_populateItemTemplate', $item ) + $populate;
+						//}
+						
+						//s
+	
+						$this->getMapItemTemplate()->populate( $location->getData() );
+						$itemcontent = $this->getMapItemTemplate()->output();
+						// escape quotes for js
+						$itemcontent = str_replace('"','\"',$itemcontent);
+						$point = $location->getLocation();
+						
+						
+						$items .= ', { lat: "'.$point[1].'", long:"'.$point[0].'",html:"'.$itemcontent.'"}'."\n";
+					}
+				}
+			}
+			
+			return $items;
+		}
+		
+		// Default implementation so that only map aware services have to override it
+		public function populateMapData($item)	{
+			return null;
 		}
 
 		public function setHeaderLink( $link ) {
