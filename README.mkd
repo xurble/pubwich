@@ -81,6 +81,14 @@ These parameters can be used for all services:
 
 * `username` → The Delicious.com username.
 
+### Dribbble
+
+* `username` → The Dribbble username.
+
+#### DribbbleShots
+
+*No specific parameters*
+
 ### Facebook
 
 * `id` → The Facebook user ID.
@@ -113,15 +121,15 @@ These parameters can be used for all services:
 
 #### GithubRecentActivity
 
-*No specific parameter*
+*No specific parameters*
 
 #### GithubRepositories
 
-*No specific parameter*
+*No specific parameters*
 
 #### GithubGists
 
-*No specific parameter*
+*No specific parameters*
 
 ### Goodreads
 
@@ -175,6 +183,16 @@ These parameters can be used for all services:
 * `size` → The size of each book covers.
 
 #### ReadernautNotes
+
+*No specific parameters*
+
+### Reddit
+
+* `username` → The Readernaut username.
+* `key` → Your API key. Go to [this page](http://www.reddit.com/prefs/feeds/) and extract the key from one of the JSON feeds URL.
+* `method` → `RedditLiked`
+
+#### RedditLiked
 
 *No specific parameters*
 
