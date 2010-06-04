@@ -84,6 +84,7 @@ These parameters can be used for all services:
 ### Dribbble
 
 * `username` → The Dribbble username.
+* `method` → `DribbbleShots`.
 
 #### DribbbleShots
 
@@ -117,7 +118,7 @@ These parameters can be used for all services:
 ### GitHub
 
 * `username` → The GitHub username
-* `method` → Either `GithubRecentActivity`, `GithubRepositories`
+* `method` → Either `GithubRecentActivity`, `GithubRepositories` and `GithubGists`
 
 #### GithubRecentActivity
 
@@ -287,7 +288,7 @@ The column template defines how each column is rendered. You don’t have to def
 Where `{{{number}}}` is replaced by the column number and `{{{content}}}` is replaced by the column content (the *boxes*). For instance, you could put this in your `functions.php` file:
 
     funtion columnTemplate() {
-        '<div class="column column-{{{number}}}"><div class="column-inner">{{{content}}}</div></div>'
+        '<div class="column column-{{{number}}}"><div class="column-inner">{{{content}}}</div></div>';
     }
 
 ### Layout templates
