@@ -75,7 +75,7 @@
 		public function init() {
 			parent::init();
 			if($this->getgeodata) {
-				$this->buildPhotoGeoCache( true );
+				$this->buildPhotoGeoCache( false );
 			}
 			return $this;
 		}
