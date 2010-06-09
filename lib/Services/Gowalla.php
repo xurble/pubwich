@@ -13,9 +13,6 @@
 
 		public $base = 'http://gowalla.com';
 
-		public $getgeodata, $stampgeodata;
-
-
 		/**
 		 * @constructor
 		 */
@@ -31,40 +28,21 @@
 				$this->http_headers[] = sprintf( 'X-Gowalla-API-Key: %s', $config['key'] );
 			}
 
-
-			$this->getgeodata = isset( $config['getgeodata'] ) ? $config['getgeodata'] : false ;
-			
 			$this->setMapItemTemplate('<div class="mapbox"><a href="{{{url}}}"><img src="{{{image}}}" width="40" style="float:right" alt="" ><strong>{{{name}}}</strong></a><br><small class="date">{{{date}}}</small></div>');
 
 
 			parent::__construct( $config );
 		}
 
-
-
-		public function init() {
-			parent::init();
-			if($this->getgeodata) {
-				$this->buildStampGeoCache( false );
-			}
-			return $this;
-		}
-
-
-		public function populateMapData( &$item, $id ) {
+		public function populateMapData( $item, $spot ) {
 		
-		
-			if(!$this->getgeodata)
-				return null;
-		
-			$geo = $this->stampgeodata["$id"];
-			if($geo->lat != null and $geo->lng != null)
+			if($spot->lat != null and $spot->lng != null)
 			{
 
 				$loc = new Location();
 				$pt = array();
-				$pt[0] = $geo->lng;
-				$pt[1] = $geo->lat;
+				$pt[0] = $spot->lng;
+				$pt[1] = $spot->lat;
 				$loc->addPoint($pt);
 				$loc->setData($this->populateItemTemplate($item));
 				
@@ -73,58 +51,6 @@
 			else
 				return null;
 		}
-
-
-		/**
-		 * @param string $url
-		 * @return void
-		 */
-		public function buildCache() {
-			parent::buildCache(); 
-			if($this->getgeodata) {
-				$this->buildStampGeoCache( true );
-			}
-		}
-
-		/**
-		 * @param bool $rebuildCache Force cache rebuild
-		 * @return void
-		 */
-		public function buildStampGeoCache( $rebuildCache ) {
-			// must override
-		}
-
-		/**
-		 * @param SimpleXMLElement $album
-		 * [@param bool $rebuildCache]
-		 * @return void
-		 */
-		public function fetchStampGeoData($id, $rebuildCache=false) {
-			$Cache_Lite = new Cache_Lite( parent::getCacheOptions() );
-						
-			if ( !$rebuildCache && $data = $Cache_Lite->get( $id ) ) {
-				$this->stampgeodata["$id"] = Pubwich::json_decode( $data );
-				
-
-				
-				
-			} else {
-				$Cache_Lite->get( $id );
-				PubwichLog::log( 2, Pubwich::_( 'Rebuilding geo cache for a Gowalla Stamp' ) );
-				$url = sprintf( 'http://api.gowalla.com%s', $id);
-				$fdata = FileFetcher::get( $url , $this->http_headers);
-				$cacheWrite = $Cache_Lite->save( $fdata );
-				if ( PEAR::isError($cacheWrite) ) {
-					//var_dump( $cacheWrite );
-				}
-				$pdata = Pubwich::json_decode( $fdata );
-				$this->stampgeodata["$id"] = $pdata;
-			}
-
-		}
-
-
-
 
 	}
 
@@ -159,21 +85,9 @@
 		}
 
 		public function populateMapData( &$item ) {
-			echo($data->last_checkins[0]->spot->url);
-			return parent::populateMapData($item,$item->last_checkins[0]->spot->url);
+			return parent::populateMapData($item,$item->last_checkins[0]->spot);
 		}
-
-		/**
-		 * @param bool $rebuildCache Force cache rebuild
-		 * @return void
-		 */
-		public function buildStampGeoCache( $rebuildCache ) {
-			$data = $this->getData();
-			foreach ($data as $stamp ) {
-				$this->fetchStampGeoData( $stamp->last_checkins[0]->spot->url, $rebuildCache );
-			} 
-		}
-
+		
 	}
 
 	class GowallaUserStamps extends Gowalla {
@@ -203,22 +117,8 @@
 		}
 
 		public function populateMapData( &$item ) {
-			return parent::populateMapData($item,$item->spot->url);
+			return parent::populateMapData($item,$item->spot);
 		}
-
-		/**
-		 * @param bool $rebuildCache Force cache rebuild
-		 * @return void
-		 */
-		public function buildStampGeoCache( $rebuildCache ) {
-			$data = $this->getData();
-			if ( $data ) {
-				foreach ( $data as $stamp ) {
-					$this->fetchStampGeoData( $stamp->spot->url, $rebuildCache );
-				}
-			}
-		}
-
 
 	}
 
@@ -248,20 +148,7 @@
 		}
 
 		public function populateMapData( &$item ) {
-			return parent::populateMapData($item,$item->url);
-		}
-
-		/**
-		 * @param bool $rebuildCache Force cache rebuild
-		 * @return void
-		 */
-		public function buildStampGeoCache( $rebuildCache ) {
-			$data = $this->getData();
-			if ( $data ) {
-				foreach ( $data as $stamp ) {
-					$this->fetchStampGeoData( $stamp->url, $rebuildCache );
-				}
-			}
+			return parent::populateMapData($item,$item);
 		}
 
 
